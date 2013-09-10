@@ -23,7 +23,7 @@ struct handler
     int               priority;
     enum handler_type type;
 
-    int               (*emit)(struct log_record *record);
+    void              (*emit)(struct log_record *record);
 };
 
 struct logger
@@ -31,9 +31,10 @@ struct logger
     list_t *handlers;
 };
 
-struct logger  *logger_new();
 struct handler *handler_new(enum handler_type type, int priority);
 
+struct logger  *logger_new();
 int logger_add_handler(struct logger *logger, struct handler *handler);
+void logger_emit(struct logger *logger, struct log_record *record);
 
 #endif

@@ -1,21 +1,20 @@
 #include <stdlib.h>
 #include <syslog.h>
+#include <stdio.h>
 
 #include "logging.h"
 
-static int emit_console(struct log_record *record)
+static void emit_console(struct log_record *record)
 {
-    return 0;
+    fprintf(stderr, "%s\n", record->message);
 }
 
-static int emit_syslog(struct log_record *record)
+static void emit_syslog(struct log_record *record)
 {
-    return 0;
 }
 
-static int emit_file(struct log_record *record)
+static void emit_file(struct log_record *record)
 {
-    return 0;
 }
 
 struct handler *handler_new(enum handler_type type, int priority)
@@ -66,6 +65,24 @@ int logger_add_handler(struct logger *logger, struct handler *handler)
     return list_push(logger->handlers, handler);
 }
 
+void logger_emit(struct logger *logger, struct log_record *record)
+{
+    list_t         *handlers = logger->handlers;
+    list_node_t    *node;
+    struct handler *handler;
+
+    while (handlers->head != NULL)
+    {
+        node    = handlers->head;
+        handler = (struct handler *) node->data;
+
+        if (record->priority <= handler->priority)
+            handler->emit(record);
+
+        handlers->head = node->next;
+    }
+}
+
 int main()
 {
     struct logger     *logger  = logger_new();
@@ -73,6 +90,8 @@ int main()
     struct log_record  record  = {LOG_DEBUG, "tesing"};
 
     logger_add_handler(logger, console);
+
+    logger_emit(logger, &record);
 
     return 0;
 }
