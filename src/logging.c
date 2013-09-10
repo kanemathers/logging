@@ -1,12 +1,14 @@
 #include <stdlib.h>
-#include <syslog.h>
 #include <stdio.h>
 
 #include "logging.h"
 
 static void emit_console(struct log_record *record)
 {
-    fprintf(stderr, "%s\n", record->message);
+    if (record->priority >= LOG_NOTICE)
+        fprintf(stdout, "%s\n", record->message);
+    else
+        fprintf(stderr, "%s\n", record->message);
 }
 
 static void emit_syslog(struct log_record *record)
