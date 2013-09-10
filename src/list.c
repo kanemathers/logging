@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "list.h"
 
 list_t *list_new()
@@ -20,13 +22,13 @@ void list_free(list_t *list, void (*free_func)(void *))
 
     while (list->head != NULL)
     {
-        node = f->head;
-        data = node->value;
+        node = list->head;
+        data = node->data;
 
         if (free_func != NULL)
             free_func(data);
 
-        list->head = data->next;
+        list->head = node->next;
 
         free(data);
     }
