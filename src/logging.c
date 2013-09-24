@@ -55,6 +55,7 @@ int logger_add_handler(logger_t *logger, handler_t *handler)
 int logger_emit(logger_t *logger, int priority, const char *format, ...)
 {
     list_t      *handlers = logger->handlers;
+    list_node_t *head     = handlers->head;
     list_node_t *node;
     handler_t   *handler;
     va_list      args;
@@ -85,6 +86,9 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
 
         handlers->head = node->next;
     }
+
+    /* This feels hacky. Check this when you're not high */
+    handlers->head = head;
 
     return 0;
 }
