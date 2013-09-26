@@ -4,37 +4,6 @@
 
 #include "logging.h"
 
-static void emit_console(logger_t *logger, int priority, const char *message)
-{
-    FILE *stream = (priority >= LOG_NOTICE) ? stdout : stderr;
-
-    fprintf(stream, "%s", message);
-}
-
-handler_t *handler_new(enum handler_type type, int priority)
-{
-    handler_t *handler = malloc(sizeof *handler);
-
-    if (!handler)
-        return NULL;
-
-    switch (type)
-    {
-        case HANDLER_CONSOLE:
-            handler->emit = emit_console;
-
-            break;
-
-        default:
-            return NULL;
-    }
-
-    handler->priority = priority;
-    handler->type     = type;
-
-    return handler;
-}
-
 logger_t *logger_new()
 {
     logger_t *logger = malloc(sizeof *logger);
@@ -47,8 +16,10 @@ logger_t *logger_new()
     return logger;
 }
 
-int logger_add_handler(logger_t *logger, handler_t *handler)
+int logger_add_handler(logger_t *logger, handler_t *handler, int priority)
 {
+    handler->priority = priority;
+
     return list_push(logger->handlers, handler);
 }
 
@@ -82,7 +53,7 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
         handler = (handler_t *) node->data;
 
         if (priority <= handler->priority)
-            handler->emit(logger, priority, message);
+            handler->emit(priority, message);
 
         handlers->head = node->next;
     }
@@ -96,10 +67,13 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
 int main()
 {
     logger_t  *logger  = logger_new();
-    handler_t *console = handler_new(HANDLER_CONSOLE, LOG_DEBUG);
+    handler_t *syslog  = hsyslog_new("logging", LOG_LOCAL0);
+    handler_t *console = hconsole_new();
 
-    logger_add_handler(logger, console);
-    logger_emit(logger, LOG_DEBUG, "test %s\n", "works!");
+    logger_add_handler(logger, syslog, LOG_DEBUG);
+    logger_add_handler(logger, console, LOG_DEBUG);
+
+    logger_emit(logger, LOG_ERR, "test %s\n", "works!");
 
     return 0;
 }
