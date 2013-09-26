@@ -26,7 +26,6 @@ int logger_add_handler(logger_t *logger, handler_t *handler, int priority)
 int logger_emit(logger_t *logger, int priority, const char *format, ...)
 {
     list_t      *handlers = logger->handlers;
-    list_node_t *head     = handlers->head;
     list_node_t *node;
     handler_t   *handler;
     va_list      args;
@@ -53,15 +52,32 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
         handler = (handler_t *) node->data;
 
         if (priority <= handler->priority)
-            handler->emit(priority, message);
+            handler->emit(handler, priority, message);
 
         handlers->head = node->next;
     }
 
-    /* This feels hacky. Check this when you're not high */
-    handlers->head = head;
-
     return 0;
+}
+
+void logger_free(logger_t *logger)
+{
+    list_t      *handlers = logger->handlers;
+    list_node_t *node;
+    handler_t   *handler;
+
+    while (handlers->head != NULL)
+    {
+        node    = handlers->head;
+        handler = (handler_t *) node->data;
+
+        if (handler->free)
+            handler->free(handler);
+
+        handlers->head = node->next;
+    }
+
+    list_free(logger->handlers, NULL);
 }
 
 int main()
@@ -74,6 +90,8 @@ int main()
     logger_add_handler(logger, console, LOG_DEBUG);
 
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
+
+    logger_free(logger);
 
     return 0;
 }
