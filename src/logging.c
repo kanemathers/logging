@@ -13,6 +13,13 @@ logger_t *logger_new()
 
     logger->handlers = list_new();
 
+    if (!logger->handlers)
+    {
+        free(logger);
+
+        return NULL;
+    }
+
     return logger;
 }
 
@@ -71,8 +78,7 @@ void logger_free(logger_t *logger)
         node    = handlers->head;
         handler = (handler_t *) node->data;
 
-        if (handler->free)
-            handler->free(handler);
+        handler->free(handler);
 
         handlers->head = node->next;
     }

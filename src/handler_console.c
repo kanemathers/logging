@@ -11,6 +11,11 @@ static void hconsole_emit(handler_t *handler, int priority, const char *message)
     fprintf(stream, "%s", message);
 }
 
+static void hconsole_free(handler_t *handler)
+{
+    free(handler);
+}
+
 handler_t *hconsole_new()
 {
     handler_t *handler = malloc(sizeof *handler);
@@ -19,7 +24,7 @@ handler_t *hconsole_new()
         return NULL;
 
     handler->emit = hconsole_emit;
-    handler->free = NULL;
+    handler->free = hconsole_free;
 
     return handler;
 }
