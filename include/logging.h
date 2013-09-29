@@ -13,6 +13,7 @@ typedef struct logger
 
 logger_t *logger_new();
 void logger_free(logger_t *logger);
+
 int logger_add_handler(logger_t *logger, handler_t *handler, int priority);
 int logger_emit(logger_t *logger, int priority, const char *format, ...);
 

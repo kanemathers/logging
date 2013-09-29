@@ -32,7 +32,6 @@ int logger_add_handler(logger_t *logger, handler_t *handler, int priority)
 
 int logger_emit(logger_t *logger, int priority, const char *format, ...)
 {
-    list_t      *handlers = logger->handlers;
     list_node_t *node;
     handler_t   *handler;
     va_list      args;
@@ -48,20 +47,15 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
         return -1;
 
     va_start(args, format);
-
     vsprintf(message, format, args);
-
     va_end(args);
 
-    while (handlers->head != NULL)
+    for (node = logger->handlers->head; node; node = node->next)
     {
-        node    = handlers->head;
         handler = (handler_t *) node->data;
 
         if (priority <= handler->priority)
             handler->emit(handler, priority, message);
-
-        handlers->head = node->next;
     }
 
     return 0;
@@ -69,21 +63,18 @@ int logger_emit(logger_t *logger, int priority, const char *format, ...)
 
 void logger_free(logger_t *logger)
 {
-    list_t      *handlers = logger->handlers;
     list_node_t *node;
     handler_t   *handler;
 
-    while (handlers->head != NULL)
+    for (node = logger->handlers->head; node; node = node->next)
     {
-        node    = handlers->head;
         handler = (handler_t *) node->data;
 
         handler->free(handler);
-
-        handlers->head = node->next;
     }
 
     list_free(logger->handlers, NULL);
+    free(logger);
 }
 
 int main()
@@ -95,6 +86,7 @@ int main()
     logger_add_handler(logger, syslog, LOG_DEBUG);
     logger_add_handler(logger, console, LOG_DEBUG);
 
+    logger_emit(logger, LOG_ERR, "test %s\n", "works!");
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
 
     logger_free(logger);

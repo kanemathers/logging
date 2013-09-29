@@ -27,7 +27,7 @@ handler_t *hsyslog_new(const char *ident, int facility)
     /* TODO: be cool to init the logger with a name/ident for all handlers and
      * just forward that through as the `ident`.
      */
-    openlog(ident, LOG_ODELAY | LOG_CONS, facility);
+    openlog(ident, LOG_ODELAY, facility);
 
     return handler;
 }
