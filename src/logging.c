@@ -79,12 +79,7 @@ void logger_free(logger_t *logger)
 
 int main()
 {
-    logger_t  *logger  = logger_new();
-    handler_t *syslog  = hsyslog_new("logging", LOG_LOCAL0);
-    handler_t *console = hconsole_new();
-
-    logger_add_handler(logger, syslog, LOG_DEBUG);
-    logger_add_handler(logger, console, LOG_DEBUG);
+    logger_t *logger = logger_from_config("./config.sample.ini");
 
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
