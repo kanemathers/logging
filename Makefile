@@ -6,7 +6,8 @@ export CFILES 	:= src/logging.c \
 					src/config.c \
 					src/list.c \
 					src/handler_console.c \
-					src/handler_syslog.c
+					src/handler_syslog.c \
+					src/handler_file.c
 export OFILES 	:= $(CFILES:.c=.o)
 
 .PHONY: clean logging

@@ -4,6 +4,7 @@
 typedef struct handler
 {
     int    priority;
+    void  *internals;
 
     void (*emit)(struct handler *handler, int priority, const char *message);
     void (*free)(struct handler *handler);
@@ -11,5 +12,6 @@ typedef struct handler
 
 handler_t *hconsole_new();
 handler_t *hsyslog_new(const char *ident, int facility);
+handler_t *hfile_new(const char *path);
 
 #endif

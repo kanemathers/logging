@@ -23,8 +23,9 @@ handler_t *hconsole_new()
     if (!handler)
         return NULL;
 
-    handler->emit = hconsole_emit;
-    handler->free = hconsole_free;
+    handler->emit      = hconsole_emit;
+    handler->free      = hconsole_free;
+    handler->internals = NULL;
 
     return handler;
 }

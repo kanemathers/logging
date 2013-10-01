@@ -11,6 +11,10 @@ struct config
     int  syslog_enabled;
     int  syslog_priority;
     char syslog_ident[100];
+
+    int  file_enabled;
+    int  file_priority;
+    char file_path[1024];
 };
 
 static int priority_from_string(const char *str)
@@ -51,6 +55,8 @@ static int ini_handler(void *arg, const char *section, const char *name,
                 config->console_enabled = 1;
             else if (strcmp(handler, "syslog") == 0)
                 config->syslog_enabled = 1;
+            else if (strcmp(handler, "file") == 0)
+                config->file_enabled = 1;
         }
     }
     else if (strcmp(section, "handler_console") == 0)
@@ -64,7 +70,14 @@ static int ini_handler(void *arg, const char *section, const char *name,
             config->syslog_priority = priority_from_string(value);
         else if (strcmp(name, "ident") == 0)
             snprintf(config->syslog_ident, sizeof config->syslog_ident, "%s",
-                     value);
+                    value);
+    }
+    else if (strcmp(section, "handler_file") == 0)
+    {
+        if (strcmp(name, "priority") == 0)
+            config->file_priority = priority_from_string(value);
+        else if (strcmp(name, "path") == 0)
+            snprintf(config->file_path, sizeof config->file_path, "%s", value);
     }
 
     return 1;
@@ -101,6 +114,14 @@ logger_t *logger_from_config(const char *path)
 
         if (handler)
             logger_add_handler(logger, handler, config.syslog_priority);
+    }
+
+    if (config.file_enabled)
+    {
+        handler = hfile_new(config.file_path);
+
+        if (handler)
+            logger_add_handler(logger, handler, config.file_priority);
     }
 
     return logger;

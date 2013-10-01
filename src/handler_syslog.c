@@ -21,8 +21,9 @@ handler_t *hsyslog_new(const char *ident, int facility)
     if (!handler)
         return NULL;
 
-    handler->emit = hsyslog_emit;
-    handler->free = hsyslog_free;
+    handler->emit      = hsyslog_emit;
+    handler->free      = hsyslog_free;
+    handler->internals = NULL;
 
     /* TODO: be cool to init the logger with a name/ident for all handlers and
      * just forward that through as the `ident`.
