@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "logging.h"
+#include "logging/logger.h"
+#include "logging/handlers.h"
 
 logger_t *logger_new()
 {
@@ -75,19 +76,4 @@ void logger_free(logger_t *logger)
 
     list_free(logger->handlers, NULL);
     free(logger);
-}
-
-int main()
-{
-    logger_t *logger = logger_from_config("./config.sample.ini");
-
-    if (!logger)
-        return EXIT_FAILURE;
-
-    logger_emit(logger, LOG_ERR, "test %s\n", "works!");
-    logger_emit(logger, LOG_ERR, "test %s\n", "works!");
-
-    logger_free(logger);
-
-    return EXIT_SUCCESS;
 }

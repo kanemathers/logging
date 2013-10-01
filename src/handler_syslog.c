@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 
-#include "handlers.h"
+#include "logging/handlers.h"
 
 static void hsyslog_emit(handler_t *handler, int priority, const char *message)
 {

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "logging.h"
-#include "handlers.h"
+#include "logging/logger.h"
+#include "logging/handlers.h"
 
 static void hconsole_emit(handler_t *handler, int priority, const char *message)
 {

@@ -1,7 +1,8 @@
 #include <string.h>
 
-#include "logging.h"
-#include "ini.h"
+#include "logging/logger.h"
+#include "logging/handlers.h"
+#include "logging/ini.h"
 
 struct config
 {
