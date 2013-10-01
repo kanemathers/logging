@@ -81,10 +81,13 @@ int main()
 {
     logger_t *logger = logger_from_config("./config.sample.ini");
 
+    if (!logger)
+        return EXIT_FAILURE;
+
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
     logger_emit(logger, LOG_ERR, "test %s\n", "works!");
 
     logger_free(logger);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

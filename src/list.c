@@ -30,7 +30,7 @@ void list_free(list_t *list, void (*free_func)(void *))
 
         list->head = node->next;
 
-        free(data);
+        free(node);
     }
 }
 

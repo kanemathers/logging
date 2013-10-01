@@ -32,7 +32,7 @@ static int priority_from_string(const char *str)
     else if (strcmp(str, "debug") == 0)
         return LOG_DEBUG;
 
-    return -1;
+    return LOG_DEBUG;
 }
 
 static int ini_handler(void *arg, const char *section, const char *name,
@@ -63,7 +63,8 @@ static int ini_handler(void *arg, const char *section, const char *name,
         if (strcmp(name, "priority") == 0)
             config->syslog_priority = priority_from_string(value);
         else if (strcmp(name, "ident") == 0)
-            strcpy(config->syslog_ident, value);
+            snprintf(config->syslog_ident, sizeof config->syslog_ident, "%s",
+                     value);
     }
 
     return 1;
@@ -72,7 +73,10 @@ static int ini_handler(void *arg, const char *section, const char *name,
 logger_t *logger_from_config(const char *path)
 {
     logger_t      *logger = logger_new();
-    struct config  config = {0};
+    handler_t     *handler;
+    struct config  config;
+
+    memset(&config, 0, sizeof config);
 
     if (!logger)
         return NULL;
@@ -84,11 +88,20 @@ logger_t *logger_from_config(const char *path)
 
     /* righto. got the config. now setup the logger */
     if (config.console_enabled)
-        logger_add_handler(logger, hconsole_new(), config.console_priority);
+    {
+        handler = hconsole_new();
+
+        if (handler)
+            logger_add_handler(logger, handler, config.console_priority);
+    }
 
     if (config.syslog_enabled)
-        logger_add_handler(logger, hsyslog_new(config.syslog_ident, LOG_LOCAL0),
-                           config.syslog_priority);
+    {
+        handler = hsyslog_new(config.syslog_ident, LOG_LOCAL0);
+
+        if (handler)
+            logger_add_handler(logger, handler, config.syslog_priority);
+    }
 
     return logger;
 }
