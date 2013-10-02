@@ -7,7 +7,9 @@ static void hfile_emit(handler_t *handler, int priority, const char *message)
 {
     FILE *file = (FILE *) handler->internals;
 
+    flockfile(file);
     fprintf(file, "%s", message);
+    funlockfile(file);
 }
 
 static void hfile_free(handler_t *handler)
