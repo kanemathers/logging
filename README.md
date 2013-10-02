@@ -3,6 +3,8 @@ logging
 
 A small, flexible logging framework for C libraries and applications.
 
+Designed for use in large applications down to embedded systems.
+
 Installing
 ----------
 
@@ -24,17 +26,19 @@ Then create your handlers:
 
     handler_t *console = hconsole_new();
     handler_t *file    = hfile_new("/tmp/output.log");
+    handler_t *syslog  = hsyslog_new("ident", LOG_LOCAL0);
 
 Need to add those handlers to the logger. Specify a priority to filter the
 output to that handler:
 
     logger_add_handler(logger, console, LOG_DEBUG);
+    logger_add_handler(logger, file, LOG_DEBUG);
     logger_add_handler(logger, syslog, LOG_ERR);
 
 And now you can start firing off log messages:
 
-    logger_emit(logger, LOG_DEBUG, "this is my %s\n", "debug message");
-    logger_emit(logger, LOG_ERR, "only syslog will see this\n");
+    logger_emit(logger, LOG_DEBUG, "syslog won't see this");
+    logger_emit(logger, LOG_ERR, "all handlers will %s", "see this");
 
 
 When you're done, cleanup:
