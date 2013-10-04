@@ -16,6 +16,10 @@ Installing
 Usage
 -----
 
+Include the header:
+
+    #include <logging.h>
+
 ### Programmable
 
 First thing you'll want to do is create your logger:
