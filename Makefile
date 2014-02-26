@@ -1,34 +1,36 @@
-PROJECT=logging
-SOURCES=src/list.c \
-		src/logging.c \
-		src/ini.c \
-		src/config.c \
-		src/handler_console.c \
-		src/handler_syslog.c \
-		src/handler_file.c
-INCFLAGS=-I$(shell pwd)/include
-CFLAGS=-Wall \
-		-Wextra \
-		-Werror \
-		-Wno-unused-parameter \
-		-pedantic
-OFILES=$(SOURCES:.c=.o)
-CC=gcc
-prefix=/usr
+PROJECT = logging
 
-.PHONY: clean logging
+CFILES := $(wildcard src/*.c)
+OFILES := $(CFILES:.c=.o)
 
-logging: $(OFILES)
+INCFLAGS += -I$(shell pwd)/include
+CFLAGS   += -Wall \
+			-Wextra \
+			-Werror \
+			-Wno-unused-parameter \
+			-pedantic
+
+CC ?= gcc
+
+PREFIX		?= /usr/local
+INSTALL_INC  = $(PREFIX)/include
+INSTALL_LIB  = $(PREFIX)/lib
+
+$(PROJECT): $(OFILES)
+	$(CC) $(OFILES) -shared $(LDFLAGS) -o lib$(PROJECT).so
 	ar rcs lib$(PROJECT).a $(OFILES)
 
-	$(CC) -shared $(OFILES) -o lib$(PROJECT).so
-
-install: logging
-	install lib$(PROJECT)* $(prefix)/lib
-	cp -r ./include/* $(prefix)/include
-
 .c.o:
-	$(CC) $(INCFLAGS) -c $(CFLAGS) -fPIC $< -o $@
+	$(CC) $(INCFLAGS) -c $(CFLAGS) $< -o $@
+
+install:
+	@mkdir -p $(INSTALL_LIB)
+	@mkdir -p $(INSTALL_INC)
+
+	cp -r ./include/* $(INSTALL_INC)
+
+	install lib$(PROJECT).so $(INSTALL_LIB)
+	install lib$(PROJECT).a $(INSTALL_LIB)
 
 clean:
-	rm -rf $(OFILES) liblogging*
+	rm lib$(PROJECT).*
