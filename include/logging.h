@@ -21,9 +21,17 @@
 #ifndef LOGGING_LOGGING_H
 #define LOGGING_LOGGING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "logging/ini.h"
 #include "logging/list.h"
 #include "logging/handlers.h"
 #include "logging/logger.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
