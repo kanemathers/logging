@@ -13,6 +13,22 @@ Installing
     $ make
     $ sudo make install
 
+Use it in your CMake based project
+------------------------------------
+
+    # set up usage of logging lib
+    add_subdirectory(logging)
+    include_directories(${SIMPLE_C_LOGGING_SOURCE_DIR}/include)
+
+    # use the logging lib for your application
+    add_executable(MyApp
+        main.cpp
+    )
+
+    target_link_libraries(MyApp    
+        simpleCLogging
+    )
+
 Usage
 -----
 
